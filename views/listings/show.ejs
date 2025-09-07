@@ -16,5 +16,8 @@
     </ul>
     
     <a href="/listings/<%= listing.id %>/edit">Edit Listing</a>
+    <form method="post" action="/listings/<%= listing.id %>?_method=DELETE">
+        <button>Delete</button>
+    </form>
 </body>
 </html>
