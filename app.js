@@ -55,6 +55,13 @@ app.get("/listings/:id",async (req,res) => {
   res.render("./listings/show.ejs",{listing});
 })
 
+app.delete("/listings/:id",async(req,res) =>{
+  const { id }=req.params;
+  const deleted=await Listing.findByIdAndDelete(id);
+  
+  res.redirect("/listings");
+})
+
 app.listen(8080,()=>{
     console.log("app listning on port 8080");
 })
