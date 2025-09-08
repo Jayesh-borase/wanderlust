@@ -76,3 +76,35 @@ footer .text-muted {
 .card-body p {
     word-wrap: break-word;
 }
+
+
+/* small cosmetic tweaks */
+.navbar-brand img {
+  height: 36px;
+  margin-right: 10px;
+}
+
+  .card img {
+      height: 200px;
+      object-fit: cover;
+  }
+  .listing-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+  }
+  .listing-price {
+      color: #444;
+      font-size: 1rem;
+  }
+  .card {
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+  }
+  .card:hover {
+      transform: scale(1.03);
+  }
+  .page-container {
+      margin-top: 30px; 
+      margin-bottom: 40px; 
+  }
