@@ -1,23 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WanderLust</title>
-</head>
-<body>
-    <h3> Listing Details :</h3>
-    <ul>
-        <li><%= listing.title %></li>
-        <li><%= listing.description %></li>
-        <li><%= listing.price.toLocaleString("en-In") %></li>
-        <li><%= listing.location %></li>
-        <li><%= listing.country %></li>
-    </ul>
-    
-    <a href="/listings/<%= listing.id %>/edit">Edit Listing</a>
-    <form method="post" action="/listings/<%= listing.id %>?_method=DELETE">
-        <button>Delete</button>
-    </form>
-</body>
-</html>
+<div class="container my-5">
+    <!-- Heading -->
+    <h2 class="mb-5 text-center fw-bold" style="font-size: 2rem;">Listing Details</h2>
+
+    <!-- Card -->
+    <div class="card shadow border-0 mx-auto" style="max-width: 600px; border-radius: 15px; overflow: hidden;">
+        <!-- Image -->
+        <img 
+            src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1625505826533-5c80aca7d157?auto=format&fit=crop&w=800&q=60' %>" 
+            class="card-img-top img-fluid" 
+            alt="<%= listing.title %>"
+            style="border-radius: 15px; object-fit: cover; max-height: 400px;"
+        >
+
+        <!-- Card Body -->
+        <div class="card-body p-4">
+            <!-- Title -->
+            <h3 class="card-title fw-bold mb-3" style="font-size: 1.5rem; color: #222;"><%= listing.title %></h3>
+
+            <!-- Description -->
+            <p class="card-text text-muted mb-3" style="font-size: 1rem; line-height: 1.5;">
+                <%= listing.description %>
+            </p>
+
+            <!-- Price -->
+            <p class="card-text fw-semibold mb-2" style="font-size: 1.2rem; color: #dc3545;">
+                ₹<%= listing.price.toLocaleString("en-IN") %>
+            </p>
+
+            <!-- Location & Country -->
+            <p class="card-text mb-3" style="font-size: 1rem;">
+                <strong>Location:</strong> <%= listing.location %><br>
+                <strong>Country:</strong> <%= listing.country %>
+            </p>
+
+            <!-- Buttons -->
+            <div class="d-flex gap-3">
+                <a href="/listings/<%= listing.id %>/edit" class="btn btn-danger px-4 py-2">Edit</a>
+                <form method="POST" action="/listings/<%= listing.id %>?_method=DELETE">
+                    <button class="btn btn-dark px-4 py-2">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
