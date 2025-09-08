@@ -1,17 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WanderLust</title>
-</head>
-<body>
-    <h3>All Listings</h3>
-    <ul>
-        <% for(let listing of allListings) { %>
-    <li><a href="/listings/<%= listing.id %>"><%= listing.title %></a></li>
-<% } %>
-    </ul>
-</body>
-</html>
+<!-- views/listings/index.ejs -->
 
+
+<div class="container page-container">
+    <h3 class="text-center mb-4">All Listings</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <% for (let listing of allListings) { %>
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1625505826533-5c80aca7d157?auto=format&fit=crop&w=800&q=60' %>"
+                     class="card-img-top" alt="<%= listing.title %>">
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="listing-title mb-2"><%= listing.title %></h5>
+                    <p class="listing-price mb-3">₹ <%= listing.price %> / night</p>
+                    <div class="mt-auto">
+                      <a href="/listings/<%= listing.id %>" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
