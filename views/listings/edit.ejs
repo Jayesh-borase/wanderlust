@@ -1,47 +1,108 @@
 <!-- views/listings/edit.ejs -->
 <div class="container listing-container">
     <h2 class="text-center mb-4">Edit Listing</h2>
-    <form method="post" action="/listings/<%= listing.id %>?_method=PUT" class="w-50 mx-auto p-4 shadow rounded bg-white">
+    <form method="post" action="/listings/<%= listing.id %>?_method=PUT" class="w-50 mx-auto p-4 shadow rounded bg-white needs-validation" novalidate>
         
+        <!-- Title -->
         <div class="mb-3">
             <label class="form-label">Title</label>
-            <input name="listing[title]" value="<%= listing.title %>" class="form-control" placeholder="Add a catchy title" required>
+            <input 
+                name="listing[title]" 
+                value="<%= listing.title %>" 
+                class="form-control" 
+                placeholder="Add a catchy title" 
+                required
+            >
+            <div class="invalid-feedback">Please provide a title.</div>
         </div>
 
+        <!-- Description -->
         <div class="mb-3">
             <label class="form-label">Description</label>
-            <textarea name="listing[description]" class="form-control" rows="3" placeholder="Enter description"><%= listing.description %></textarea>
+            <textarea 
+                name="listing[description]" 
+                class="form-control" 
+                rows="3" 
+                placeholder="Enter description" 
+                required
+            ><%= listing.description %></textarea>
+            <div class="invalid-feedback">Please provide a description.</div>
         </div>
 
+        <!-- Image Link -->
         <div class="mb-3">
+            <label class="form-label">Image Link</label>
             <input 
-    name="listing[image]" 
-    type="text"
-    class="form-control" 
-    placeholder="Enter image URL/Link"
-    value="<%= listing.image && listing.image.url ? listing.image.url : '' %>"
->
-
+                name="listing[image]" 
+                type="text"
+                class="form-control" 
+                placeholder="Enter image URL/Link"
+                value="<%= listing.image && listing.image.url ? listing.image.url : '' %>" 
+                required
+            >
+            <div class="invalid-feedback">Please provide an image URL.</div>
         </div>
 
+        <!-- Price and Country -->
         <div class="row mb-3">
             <div class="col">
                 <label class="form-label">Price</label>
-                <input name="listing[price]" value="<%= listing.price %>" class="form-control" placeholder="Enter price" type="number">
+                <input 
+                    name="listing[price]" 
+                    value="<%= listing.price %>" 
+                    class="form-control" 
+                    placeholder="Enter price" 
+                    type="number" 
+                    min="1" 
+                    required
+                >
+                <div class="invalid-feedback">Please enter a valid price.</div>
             </div>
             <div class="col">
                 <label class="form-label">Country</label>
-                <input name="listing[country]" value="<%= listing.country %>" class="form-control" placeholder="Enter country">
+                <input 
+                    name="listing[country]" 
+                    value="<%= listing.country %>" 
+                    class="form-control" 
+                    placeholder="Enter country" 
+                    required
+                >
+                <div class="invalid-feedback">Please provide a country.</div>
             </div>
         </div>
 
+        <!-- Location -->
         <div class="mb-3">
             <label class="form-label">Location</label>
-            <input name="listing[location]" value="<%= listing.location %>" class="form-control" placeholder="Enter location">
+            <input 
+                name="listing[location]" 
+                value="<%= listing.location %>" 
+                class="form-control" 
+                placeholder="Enter location" 
+                required
+            >
+            <div class="invalid-feedback">Please provide a location.</div>
         </div>
 
         <div class="text-center">
-            <button class="btn btn-danger px-4 py-2">Update</button>
+            <button class="btn btn-danger px-4 py-2" type="submit">Update</button>
         </div>
     </form>
 </div>
+
+<!-- Bootstrap Validation Script -->
+<script>
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
