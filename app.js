@@ -4,7 +4,13 @@ const mongoose=require("mongoose");
 const Listing=require("./models/listing.js");
 const path=require("path"); 
 var methodOverride = require('method-override')
+const ejsLayouts = require("express-ejs-layouts");
 
+
+
+app.use(express.static(path.join(__dirname, "public")));
+app.use(ejsLayouts);
+app.set("layout", "layouts/boilerplate.ejs");
  
 
 app.use(methodOverride('_method'))
@@ -22,6 +28,7 @@ async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
 }
 app.get("/listings",async (req,res) => {
+
   const allListings=await Listing.find();
   res.render("./listings/index.ejs",{allListings});
 })
@@ -42,18 +49,37 @@ app.get("/listings/:id/edit",async (req,res) => {
  
   res.render("./listings/edit.ejs",{listing});
 })
+app.put("/listings/:id", async (req, res) => {
+    const { id } = req.params;
+    const listingData = req.body.listing;
 
-app.put("/listings/:id",async (req,res) => {
-    const {id}=req.params;
-    const updated=await Listing.findByIdAndUpdate(id,{...req.body.listing},{new : true});
+    const existingListing = await Listing.findById(id);
+
+    if (!listingData.image || listingData.image.trim() === "") {
+        listingData.image = existingListing.image;
+    } else {
+        listingData.image = {
+            filename: "listingimage", 
+            url: listingData.image
+        };
+    }
+
+    const updatedListing = await Listing.findByIdAndUpdate(id, listingData, { new: true });
     res.redirect(`/listings/${id}`);
-})
+});
 
-app.get("/listings/:id",async (req,res) => {
-  const { id }= req.params;
-  const listing=await Listing.findById(id);
-  res.render("./listings/show.ejs",{listing});
-})
+app.get("/listings/:id", async (req, res) => {
+    const { id } = req.params;
+    const listing = await Listing.findById(id);
+    
+    if (!listing.image) {
+        listing.image = { url: "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?auto=format&fit=crop&w=800&q=60" };
+    } else if (typeof listing.image === "string") {
+        listing.image = { url: listing.image };
+    }
+
+    res.render("listings/show", { listing });
+});
 
 app.delete("/listings/:id",async(req,res) =>{
   const { id }=req.params;
