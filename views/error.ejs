@@ -1,0 +1,16 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error <%= statusCode %></title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body class="text-center mt-5">
+    <div class="container">
+        <h1 class="display-4">Error <%= statusCode %></h1>
+        <p class="lead"><%= message %></p>
+        <a href="/listings" class="btn btn-primary">Back to Listings</a>
+    </div>
+</body>
+</html>
