@@ -1,96 +1,89 @@
-const express=require("express");
-const app=express();
-const mongoose=require("mongoose");
-const Listing=require("./models/listing.js");
-const path=require("path"); 
-var methodOverride = require('method-override')
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const path = require("path"); 
+const Listing = require("./models/listing.js");
+const methodOverride = require('method-override');
 const ejsLayouts = require("express-ejs-layouts");
+const ExpressError = require("./utils/ExpresError.js");
+const session = require("express-session");
+const flash = require("connect-flash");
+const passport = require("passport");
+const localStrategy = require("passport-local");
+const User = require("./models/user.js");
 
-
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
+const users = require("./routes/user.js");
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(ejsLayouts);
 app.set("layout", "layouts/boilerplate.ejs");
- 
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
 
-app.use(methodOverride('_method'))
 
-app.set("view engine","ejs");
-app.set("views",path.join(__dirname,"views"));
+const sessionOptions = {
+  secret: "Mysupersecretcode",
+  resave: false,
+  saveUninitialized: true
+};
+app.use(session(sessionOptions));
+app.use(flash());
 
-app.use(express.urlencoded({extended:true}));
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews);
+app.use("/", users);
+
+app.get("/", (req, res) => {
+  res.send("I am root");
+});
+
 
 main()
-.then((res) => console.log("db connect.."))
-.catch(err => console.log(err));
+  .then(() => console.log("DB connected"))
+  .catch(err => console.log(err));
 
 async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
 }
-app.get("/listings",async (req,res) => {
 
-  const allListings=await Listing.find();
-  res.render("./listings/index.ejs",{allListings});
-})
-
-app.get("/listings/new",(req,res) => {
-  res.render("./listings/new.ejs");
-})
-
-app.post("/listings",async (req,res) =>{
-  const newListing=new Listing(req.body.listing);
-  await newListing.save();
-  res.redirect("/listings");
-})
-
-app.get("/listings/:id/edit",async (req,res) => {
-  const { id }=req.params;
-  const listing=await Listing.findById(id);
- 
-  res.render("./listings/edit.ejs",{listing});
-})
-app.put("/listings/:id", async (req, res) => {
-    const { id } = req.params;
-    const listingData = req.body.listing;
-
-    const existingListing = await Listing.findById(id);
-
-    if (!listingData.image || listingData.image.trim() === "") {
-        listingData.image = existingListing.image;
-    } else {
-        listingData.image = {
-            filename: "listingimage", 
-            url: listingData.image
-        };
-    }
-
-    const updatedListing = await Listing.findByIdAndUpdate(id, listingData, { new: true });
-    res.redirect(`/listings/${id}`);
+app.use((req, res, next) => {
+  next(new ExpressError(404, "Page not found"));
 });
 
-app.get("/listings/:id", async (req, res) => {
-    const { id } = req.params;
-    const listing = await Listing.findById(id);
-    
-    if (!listing.image) {
-        listing.image = { url: "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?auto=format&fit=crop&w=800&q=60" };
-    } else if (typeof listing.image === "string") {
-        listing.image = { url: listing.image };
-    }
+app.use(async (err, req, res, next) => {
+  const { statusCode = 500, message = "Something went wrong" } = err;
 
-    res.render("listings/show", { listing });
+  if (req.xhr) {
+    return res.status(statusCode).json({ error: message });
+  }
+
+  let allListings = [];
+  try {
+    allListings = await Listing.find();
+  } catch (dbErr) {
+    console.log("DB fetch failed in error handler:", dbErr);
+  }
+
+  res.status(statusCode).render("listings/index", { allListings, error: message });
 });
 
-app.delete("/listings/:id",async(req,res) =>{
-  const { id }=req.params;
-  const deleted=await Listing.findByIdAndDelete(id);
-  
-  res.redirect("/listings");
-})
-
-app.listen(8080,()=>{
-    console.log("app listning on port 8080");
-})
-app.get("/",(req,res)=>{
-    res.send("I am root");
-})
+app.listen(8080, () => {
+  console.log("App listening on port 8080");
+});
