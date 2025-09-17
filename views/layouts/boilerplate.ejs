@@ -12,8 +12,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
+        html, body {
+            height: 100%;
+        }
         body {
             font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
         }
         .navbar {
             padding: 12px 20px;
@@ -21,7 +26,7 @@
             border-bottom: 1px solid black;
             position: sticky;
             top: 0;
-            z-index: 1000; /* Always stays on top */
+            z-index: 1000;
         }
         .navbar-brand img {
             height: 40px;
@@ -42,20 +47,46 @@
             transition: color 0.3s ease, background-color 0.3s ease;
             border-radius: 4px;
         }
-        /* Hover Effect */
         .navbar-nav .nav-link:hover {
             color: white !important;
-            background-color: #222; /* Dark background on hover */
+            background-color: #222;
         }
-        /* Active page indicator (optional) */
         .navbar-nav .nav-link.active {
             color: white !important;
             background-color: #000;
         }
+        main {
+            flex: 1 0 auto; /* allows main content to grow and push footer down */
+            margin-top: 20px;
+        }
+        footer {
+            flex-shrink: 0; /* footer does not shrink */
+        }
+        /* Flash message container */
+        .flash-container {
+            position: fixed;
+            top: 70px; /* below navbar */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            z-index: 1100;
+        }
+        .flash-container .alert {
+            text-align: center;
+            font-size: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
     </style>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="d-flex align-items-center">
             <!-- Logo -->
@@ -63,7 +94,7 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Logo">
             </a>
 
-            <!-- Links just beside the logo -->
+            <!-- Navigation Links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="/">Home</a>
@@ -78,12 +109,42 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <%- body %>
+    <!-- Flash messages -->
+    <div class="flash-container">
+      <% if (typeof success !== 'undefined' && success.length) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+           <%= success %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% } %>
+
+      <% if (typeof error !== 'undefined' && error.length) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+           <%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% } %>
     </div>
 
-        <%- include('../includes/footer') %>
+    <!-- Main content -->
+    <main class="container">
+      <%- body %>
+    </main>
+
+    <%- include('../includes/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Auto-hide flash messages after 3 seconds
+      document.addEventListener("DOMContentLoaded", function() {
+        const alerts = document.querySelectorAll('.flash-container .alert');
+        alerts.forEach(alert => {
+          setTimeout(() => {
+            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+            bsAlert.close();
+          }, 3000);
+        });
+      });
+    </script>
 </body>
 </html>
