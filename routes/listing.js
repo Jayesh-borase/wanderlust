@@ -5,6 +5,7 @@ const Listing=require("../models/listing.js");
 const {listingSchema}=require("../schema.js");
 const wrapAsync=require("../utils/wrapAsync.js");
 const ExpressError=require("../utils/ExpresError.js");
+const { isLoggedIn } = require("../middleware.js");
 
 
 
@@ -26,7 +27,8 @@ router.get("/",async (req,res) => {
   res.render("./listings/index.ejs",{allListings});
 })
 
-router.get("/new",(req,res) => {
+router.get("/new",isLoggedIn,(req,res) => {
+  
   res.render("./listings/new.ejs");
 })
 
