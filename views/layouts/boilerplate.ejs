@@ -107,7 +107,24 @@
                 </li>
             </ul>
         </div>
-    </nav>
+        <!-- Auth Buttons -->
+
+<div class="d-flex align-items-center gap-3 ms-auto">
+  <% if (!currentUser) { %>
+    <ul class="navbar-nav d-flex flex-row gap-3">
+      <li class="nav-item">
+        <a class="nav-link" href="/signup">Sign up</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/login">Log in</a>
+      </li>
+    </ul>
+  <% } else { %>
+    <a class="btn btn-danger" href="/logout">Log out</a>
+  <% } %>
+</div>
+
+</nav>
 
     <!-- Flash messages -->
     <div class="flash-container">
