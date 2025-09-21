@@ -1,6 +1,6 @@
 <div class="container my-5">
     <!-- Heading -->
-    <h2 class="mb-5 text-center fw-bold" style="font-size: 2rem;">Listing Details</h2>
+    <h2 class="mb-5 text-center fw-bold" style="font-size: 2rem;"><%= listing.title %></h2>
 
     <!-- Card -->
     <div class="card shadow border-0 mx-auto" style="max-width: 600px; border-radius: 15px; overflow: hidden;">
@@ -14,9 +14,8 @@
 
         <!-- Card Body -->
         <div class="card-body p-4">
-            <!-- Title -->
-            <h3 class="card-title fw-bold mb-3" style="font-size: 1.5rem; color: #222;"><%= listing.title %></h3>
-
+           
+            <p class="card-text mb-3 ">Owned by <i><%= listing.owner.username%></i></p>
             <!-- Description -->
             <p class="card-text text-muted mb-3" style="font-size: 1rem; line-height: 1.5;">
                 <%= listing.description %>
@@ -34,16 +33,19 @@
             </p>
 
             <!-- Buttons -->
+            <% if(currentUser && currentUser._id.equals(listing.owner._id)) { %> 
             <div class="d-flex gap-3">
                 <a href="/listings/<%= listing.id %>/edit" class="btn btn-danger px-4 py-2">Edit</a>
                 <form method="POST" action="/listings/<%= listing.id %>?_method=DELETE">
                     <button class="btn btn-dark px-4 py-2">Delete</button>
                 </form>
             </div>
-        </div>
+             <% } %>
+        </div>  
     </div>
 </div>
 <!-- Review Section -->
+ <% if(currentUser) {%>
 <div class="container my-5">
   <div class="card shadow-sm border-0 mx-auto" style="max-width: 600px; border-radius: 15px;">
     <div class="card-body p-4">
@@ -83,7 +85,7 @@
           </button>
         </div>
       </form>
-   
+   <% } %>
 <hr/>
 <!-- Review Section -->
 <div class="container my-5">
@@ -94,7 +96,7 @@
       <div class="col-md-6">
         <div class="p-3 border rounded shadow-sm h-100 d-flex flex-column justify-content-between">
           <!-- Reviewer Name -->
-          <h6 class="fw-bold mb-2">John Doe</h6> <!-- Temporary name -->
+          <h6 class="fw-bold mb-2"><%= review.author.username %></h6> <!-- Temporary name -->
 
           <!-- Comment -->
           <p class="mb-2 text-muted"><%= review.comment %></p>
@@ -103,9 +105,11 @@
           <p class="mb-2"><strong>Rating:</strong> <%= review.rating %> / 5</p>
 
           <!-- Delete Button -->
+          <% if(currentUser && currentUser._id.equals(review.author._id)) { %>
           <form method="POST" action="/listings/<%= listing.id %>/reviews/<%= review._id %>?_method=DELETE" class="text-end mt-auto">
             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
           </form>
+          <% } %>
         </div>
       </div>
     <% } %>

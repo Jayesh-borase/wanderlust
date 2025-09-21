@@ -1,3 +1,6 @@
+if(process.env.NODE_ENV != "production"){
+  require("dotenv").config();
+}
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -7,6 +10,7 @@ const methodOverride = require('method-override');
 const ejsLayouts = require("express-ejs-layouts");
 const ExpressError = require("./utils/ExpresError.js");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
@@ -25,11 +29,35 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
 
+ const dburl=process.env.ATLASDB_URL;
+ async function main(){
+  await mongoose.connect(dburl);
+ }
+ main().catch(err => console.log("DB Connection Error:", err));
+
+ const store=MongoStore.create({
+  mongoUrl:dburl,
+  crypto:{
+    secret:process.env.SECRET,
+  },
+  touchAfter: 24 * 3600,
+ });
+
+ store.on("error",(err) => {
+  console.log("Error in mongo session",err);
+ })
 const sessionOptions = {
-  secret: "Mysupersecretcode",
+  store,
+  secret: process.env.SECRET ,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true, // prevents client-side JS from accessing the cookie
+    expires: Date.now() + 1000*60*60*24*7, // 1 week
+    maxAge: 1000*60*60*24*7
+  }
 };
+
 app.use(session(sessionOptions));
 app.use(flash());
 
@@ -53,18 +81,7 @@ app.use("/listings", listings);
 app.use("/listings/:id/reviews", reviews);
 app.use("/", users);
 
-app.get("/", (req, res) => {
-  res.send("I am root");
-});
-
-
-main()
-  .then(() => console.log("DB connected"))
-  .catch(err => console.log(err));
-
-async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
-}
+ 
 
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page not found"));

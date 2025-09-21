@@ -1,23 +1,109 @@
 <!-- views/listings/index.ejs -->
 
+<style>
+  .switch-container {
+    background-color: #f8f9fa; /* light gray background */
+    cursor: pointer;
+    white-space: nowrap;
+    border: 1px solid #ccc; /* slightly darker border */
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .switch-container:hover {
+    background-color: #e9ecef; /* slight hover effect */
+    border-color: #b3b3b3; /* a little darker on hover */
+  }
+
+  .switch-container .form-check-input {
+    width: 35px;
+    height: 20px;
+  }
+
+  .active-category {
+    font-weight: bold;
+    color: #dc3545; /* bootstrap danger red */
+  }
+</style>
 
 <div class="container page-container">
-    <h3 class="text-center mb-4">All Listings</h3>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        <% for (let listing of allListings) { %>
-        <div class="col">
-            <div class="card shadow-sm h-100">
-                <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1625505826533-5c80aca7d157?auto=format&fit=crop&w=800&q=60' %>"
-                     class="card-img-top" alt="<%= listing.title %>">
-                <div class="card-body text-center d-flex flex-column">
-                    <h5 class="listing-title mb-2"><%= listing.title %></h5>
-                    <p class="listing-price mb-3">₹ <%= listing.price %> / night</p>
-                    <div class="mt-auto">
-                      <a href="/listings/<%= listing.id %>" class="btn btn-primary btn-sm">View Details</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <% } %>
+<!-- Categories Bar -->
+<div class="categories-bar d-flex justify-content-start align-items-center mb-4 overflow-auto">
+  <div class="category text-center me-2">
+    <i class="fas fa-fire fa-sm"></i>
+    <p class="small mt-1 mb-0">Trending</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-home fa-sm"></i>
+    <p class="small mt-1 mb-0">Rooms</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-city fa-sm"></i>
+    <p class="small mt-1 mb-0">Iconic Cities</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-mountain fa-sm"></i>
+    <p class="small mt-1 mb-0">Mountains</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-chess-rook fa-sm"></i>
+    <p class="small mt-1 mb-0">Castles</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-swimming-pool fa-sm"></i>
+    <p class="small mt-1 mb-0">Pools</p>
+  </div>
+
+  <!-- New Compact Categories -->
+  <div class="category text-center me-2">
+    <i class="fas fa-tractor fa-sm"></i>
+    <p class="small mt-1 mb-0">Farms</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-snowflake fa-sm"></i>
+    <p class="small mt-1 mb-0">Domes</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-ship fa-sm"></i>
+    <p class="small mt-1 mb-0">Boats</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-tree fa-sm"></i>
+    <p class="small mt-1 mb-0">Cabins</p>
+  </div>
+  <div class="category text-center me-2">
+    <i class="fas fa-campground fa-sm"></i>
+    <p class="small mt-1 mb-0">Camping</p>
+  </div>
+
+
+
+    <div class="switch-container d-flex align-items-center ms-3 px-3 py-2 rounded-3 border">
+      <span class="me-2 small">Display total after taxes</span>
+      <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" id="taxSwitch">
+      </div>
     </div>
+  </div>
+
+  <!-- Listings -->
+  <h3 class="text-center mb-4">All Listings</h3>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% allListings.forEach(listing => { %>
+      <div class="col">
+        <div class="card shadow-sm h-100">
+          <img src="<%= listing.image?.url || 'https://images.unsplash.com/photo-1625505826533-5c80aca7d157?auto=format&fit=crop&w=800&q=60' %>" class="card-img-top" alt="<%= listing.title %>">
+          <div class="card-body text-center d-flex flex-column">
+            <h5 class="listing-title mb-2"><%= listing.title %></h5>
+            <p class="listing-price mb-3">
+              <span class="price-value" data-base-price="<%= listing.price %>">₹ <%= listing.price %></span> / night
+              <span class="tax-info d-none"> &nbsp; &nbsp;(incl. 18% GST)</span>
+            </p>
+            <div class="mt-auto">
+              <a href="/listings/<%= listing._id %>" class="btn btn-primary btn-sm">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
 </div>

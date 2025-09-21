@@ -1,7 +1,7 @@
 <div class="container listing-container">
     <h2 class="text-center mb-4">Create a New Listing</h2>
     
-    <form method="post" action="/listings" class="w-50 mx-auto p-4 shadow rounded bg-white needs-validation" novalidate>
+    <form method="post" action="/listings" class="w-50 mx-auto p-4 shadow rounded bg-white needs-validation" novalidate enctype="multipart/form-data">
         
         <!-- Title -->
         <div class="mb-3">
@@ -17,10 +17,25 @@
             <div class="invalid-feedback">Please provide a description.</div>
         </div>
 
+        <div class="mb-3">
+  <label for="category" class="form-label">Category</label>
+  <select class="form-select" name="listing[category]" id="category">
+    <option value="Trending">Trending</option>
+    <option value="Rooms">Rooms</option>
+    <option value="Castles">Castles</option>
+    <option value="Mountains">Mountains</option>
+    <option value="Amazing Pools">Amazing Pools</option>
+    <option value="Camping">Camping</option>
+    <option value="Arctic Domes">Arctic Domes</option>
+    <option value="Boats">Boats</option>
+    <!-- add any new categories here -->
+  </select>
+</div>
+
         <!-- Image Link -->
         <div class="mb-3">
             <label class="form-label">Image Link</label>
-            <input name="listing[image]" class="form-control" placeholder="Enter image URL/Link" required>
+            <input type="file" name="listing[image]" class="form-control" placeholder="Enter image URL/Link" required>
             <div class="invalid-feedback">Please provide an image URL.</div>
         </div>
 

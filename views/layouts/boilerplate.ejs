@@ -10,8 +10,45 @@
     
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+   .navbar .form-control-sm {
+  height: 30px;
+  font-size: 0.85rem;
+}
+
+.navbar .btn-sm {
+  height: 30px;
+  font-size: 0.85rem;
+}
+
+/* Ensure search form stays centered and fixed width */
+.navbar form {
+  flex: 0 0 auto;
+}
+
+      .categories-bar {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  display: flex;               /* ensure flex layout */
+  flex-direction: row;          /* force horizontal */
+  overflow-x: auto;             /* allow horizontal scroll */
+  white-space: nowrap;          /* prevent wrapping */
+}
+
+.category {
+  flex: 0 0 auto;               /* prevents shrinking */
+  text-align: center;
+  min-width: 80px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.category:hover {
+  color: #000;
+}
         html, body {
             height: 100%;
         }
@@ -87,42 +124,50 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar">
-        <div class="d-flex align-items-center">
-            <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Logo">
-            </a>
+  <!-- Navbar -->
+<nav class="navbar">
+  <div class="d-flex align-items-center w-100">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="/listings">
+      <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Logo">
+    </a>
 
-            <!-- Navigation Links -->
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/listings">All Listings</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/listings/new">Add New Listing</a>
-                </li>
-            </ul>
-        </div>
-        <!-- Auth Buttons -->
-
-<div class="d-flex align-items-center gap-3 ms-auto">
-  <% if (!currentUser) { %>
-    <ul class="navbar-nav d-flex flex-row gap-3">
+    <!-- Navigation Links -->
+    <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" href="/signup">Sign up</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/login">Log in</a>
+        <a class="nav-link" href="/listings">Explore</a>
       </li>
     </ul>
-  <% } else { %>
-    <a class="btn btn-danger" href="/logout">Log out</a>
-  <% } %>
-</div>
+
+    <!-- Search form -->
+       <form class="d-flex position-absolute start-50 translate-middle-x" action="/listings" method="GET" style="width: 300px;">
+  <input class="form-control form-control-sm me-2" type="text" name="location" placeholder="Search by city or country" aria-label="Search">
+  <button class="btn btn-primary btn-sm" type="submit">Search</button>
+</form>
+
+
+    <!-- Auth Buttons -->
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <ul class="navbar-nav d-flex flex-row gap-3">
+        <li class="nav-item">
+          <a class="nav-link" href="/listings/new">Airbnb your home</a>
+        </li>
+        <% if (!currentUser) { %>
+          <li class="nav-item">
+  <a class="nav-link fw-normal text-dark" href="/signup">Sign up</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link fw-normal text-dark" href="/login">Log in</a>
+</li>
+
+        </ul>
+      <% } else { %>
+        <a class="btn btn-danger" href="/logout">Log out</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
 
 </nav>
 
@@ -162,6 +207,40 @@
           }, 3000);
         });
       });
-    </script>
+
+document.addEventListener("DOMContentLoaded", function() {
+  const taxSwitch = document.getElementById("taxSwitch");
+
+  // Select all listings
+  const listings = document.querySelectorAll(".listing-price");
+
+  // Initially hide GST
+  listings.forEach(listing => {
+    const taxInfo = listing.querySelector(".tax-info");
+    taxInfo.classList.add("d-none");
+  });
+
+  // Listen for switch toggle
+  taxSwitch.addEventListener("change", function() {
+    listings.forEach(listing => {
+      const priceEl = listing.querySelector(".price-value");
+      const basePrice = parseFloat(priceEl.dataset.basePrice); // always use original price
+      const taxInfo = listing.querySelector(".tax-info");
+
+      if (taxSwitch.checked) {
+        // Switch ON → show GST
+        const totalPrice = (basePrice * 1.18).toFixed(2); // 18% GST
+        priceEl.textContent = `₹ ${totalPrice}`;
+        taxInfo.classList.remove("d-none");
+      } else {
+        // Switch OFF → show base price
+        priceEl.textContent = `₹ ${basePrice}`;
+        taxInfo.classList.add("d-none");
+      }
+    });
+  });
+});
+</script>
+
 </body>
 </html>
